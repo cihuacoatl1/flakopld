@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema PLD - Prevención de Lavado de Dinero</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Sistema de Login -->
+    <div class="login-container" id="login-container">
+        <div class="login-form">
+            <h2>Sistema PLD - Iniciar Sesión</h2>
+            <div class="form-group">
+                <label for="username">Usuario</label>
+                <input type="text" id="username" placeholder="Ingrese su usuario">
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" placeholder="Ingrese su contraseña">
+            </div>
+            <button class="login-btn" id="login-button">Iniciar Sesión</button>
+            <div class="notification error" id="login-error" style="display: none; margin-top: 15px;">
+                Usuario o contraseña incorrectos
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Principal -->
+    <div class="dashboard" id="dashboard">
+        <div class="container">
+            <header>
+                <div>
+                    <h1>Sistema PLD - Prevención de Lavado de Dinero</h1>
+                    <p>Gestión de alertas y generación de archivos para declaraciones</p>
+                </div>
+                <div class="user-info">
+                    <span id="user-display">Usuario: Administrador</span>
+                    <button class="logout-btn" id="logout-button">Cerrar Sesión</button>
+                </div>
+            </header>
+            
+            <div class="notification success" id="success-notification">
+                Operación realizada correctamente.
+            </div>
+            
+            <div class="notification error" id="error-notification">
+                Por favor, complete todos los campos obligatorios.
+            </div>
+            
+            <div class="notification warning" id="warning-notification">
+                Se han detectado operaciones inusuales.
+            </div>
+            
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="dashboard-tab">Dashboard</button>
+                <button class="tab-btn" data-tab="general">Datos Generales</button>
+                <button class="tab-btn" data-tab="enajenacion">Enajenación de Bienes</button>
+                <button class="tab-btn" data-tab="adquisicion">Adquisición de Bienes</button>
+                <button class="tab-btn" data-tab="omision">Omisión</button>
+                <button class="tab-btn" data-tab="identificacion">Identificación de Socios</button>
+                <button class="tab-btn" data-tab="actividades">Actividades Vulnerables</button>
+                <button class="tab-btn" data-tab="alertas">Gestión de Alertas</button>
+                <button class="tab-btn" data-tab="configuracion">Configuración</button>
+            </div>
+            
+            <!-- DASHBOARD PRINCIPAL -->
+            <div class="tab-content active" id="dashboard-tab">
+                <h2>Dashboard Principal</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>Resumen de Actividad</h3>
+                        <div class="summary-table">
+                            <table>
+                                <tr>
+                                    <th>Módulo</th>
+                                    <th>Declaraciones</th>
+                                    <th>Alertas</th>
+                                </tr>
+                                <tr>
+                                    <td>Enajenación</td>
+                                    <td id="count-enajenacion">0</td>
+                                    <td id="alerts-enajenacion">0</td>
+                                </tr>
+                                <tr>
+                                    <td>Adquisición</td>
+                                    <td id="count-adquisicion">0</td>
+                                    <td id="alerts-adquisicion">0</td>
+                                </tr>
+                                <tr>
+                                    <td>Omisión</td>
+                                    <td id="count-omision">0</td>
+                                    <td id="alerts-omision">0</td>
+                                </tr>
+                                <tr>
+                                    <td>Identificación</td>
+                                    <td id="count-identificacion">0</td>
+                                    <td id="alerts-identificacion">0</td>
+                                </tr>
+                                <tr>
+                                    <td>Actividades Vulnerables</td>
+                                    <td id="count-actividades">0</td>
+                                    <td id="alerts-actividades">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Alertas Recientes</h3>
+                        <div class="alert-list" id="recent-alerts">
+                            <p>No hay alertas recientes</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Operaciones Recientes</h3>
+                <div class="summary-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Módulo</th>
+                                <th>RFC</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-operations">
+                            <tr>
+                                <td colspan="5">No hay operaciones recientes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- DATOS GENERALES -->
+            <div class="tab-content" id="general">
+                <h2>Datos Generales</h2>
+                <form id="general-form">
+                    <div class="form-group">
+                        <label for="ejercicio" class="required">Ejercicio</label>
+                        <input type="number" id="ejercicio" min="2009" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tipoDeclaracion" class="required">Tipo de Declaración</label>
+                        <select id="tipoDeclaracion" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="001">001 - Normal</option>
+                            <option value="002">002 - Complementaria</option>
+                            <option value="003">003 - Aclaratoria</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tipoInformativa" class="required">Tipo Informativa</label>
+                        <select id="tipoInformativa" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="24">24 - Enajenación de bienes</option>
+                            <option value="25">25 - Adquisición de bienes</option>
+                            <option value="26">26 - Omisión</option>
+                            <option value="27">27 - Identificación</option>
+                            <option value="28">28 - Actividades vulnerables</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fechaOperacion" class="required">Fecha de Operación</label>
+                        <input type="date" id="fechaOperacion" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rfc" class="required">RFC</label>
+                        <input type="text" id="rfc" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="claveActividad" class="required">Clave de Actividad</label>
+                        <input type="text" id="claveActividad" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rfcEntidad">RFC Entidad Colegiada</label>
+                        <input type="text" id="rfcEntidad">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="referencia">Referencia</label>
+                        <input type="text" id="referencia">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="prioridad">Prioridad</label>
+                        <input type="number" id="prioridad" min="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tipoAlerta">Tipo de Alerta</label>
+                        <input type="text" id="tipoAlerta">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="descripcionAlerta">Descripción de Alerta</label>
+                        <textarea id="descripcionAlerta"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="folioAvisoPrevio">Folio de Aviso Previo</label>
+                        <input type="text" id="folioAvisoPrevio">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="descripcionModAlerta">Descripción de Modificación de Alerta</label>
+                        <textarea id="descripcionModAlerta"></textarea>
+                    </div>
+                </form>
+                
+                <div class="actions">
+                    <button class="btn btn-success" id="generate-general-txt">Generar Archivo TXT</button>
+                    <button class="btn btn-danger" id="reset-general-form">Limpiar Formulario</button>
+                </div>
+            </div>
+            
+            <!-- ENAJENACIÓN DE BIENES -->
+            <div class="tab-content" id="enajenacion">
+                <h2>Enajenación de Bienes</h2>
+                <p>Complete la información requerida para la enajenación de bienes</p>
+                
+                <form id="enajenacion-form">
+                    <!-- Datos de Operación -->
+                    <div class="section-toggle" id="toggle-datos-operacion">
+                        <h3>Datos de la Operación</h3>
+                        <span>▼</span>
+                    </div>
+                    
+                    <div class="section-content active" id="datos-operacion">
+                        <div class="form-group">
+                            <label for="enajenacion-numeroEscritura" class="required">Número de Escritura</label>
+                            <input type="text" id="enajenacion-numeroEscritura" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="enajenacion-fechaFirma" class="required">Fecha de Firma de Escritura</label>
+                            <input type="date" id="enajenacion-fechaFirma" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="enajenacion-tipoInmueble" class="required">Tipo de Inmueble</label>
+                            <select id="enajenacion-tipoInmueble" required>
+                                <option value="">Seleccione una opción</option>
+                                <option value="1">Casa habitación</option>
+                                <option value="2">Comercial</option>
+                                <option value="3">Industrial</option>
+                                <option value="4">Terreno</option>
+                                <option value="9">Otros</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="enajenacion-especificaTipoGroup" style="display: none;">
+                            <label for="enajenacion-especificaTipo" class="required">Especificar Tipo de Inmueble</label>
+                            <input type="text" id="enajenacion-especificaTipo">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="enajenacion-valorAvaluo" class="required">Valor de Avalúo</label>
+                            <input type="number" id="enajenacion-valorAvaluo" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Detalle del Pago (iterativo) -->
+                    <div class="section-toggle" id="toggle-detalle-pago">
+                        <h3>Detalle del Pago</h3>
+                        <span>▼</span>
+                    </div>
+                    
+                    <div class="section-content active" id="detalle-pago">
+                        <p>Debes capturar por lo menos un registro.</p>
+                        <div id="pagos-container">
+                            <div class="repeating-section">
+                                <button class="remove-section">×</button>
+                                
+                                <div class="form-group">
+                                    <label class="required">Monto de la Operación</label>
+                                    <input type="number" min="0" step="0.01" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="required">Tipo de Pago</label>
+                                    <select required>
+                                        <option value="">Seleccione una opción</option>
+                                        <option value="1">Efectivo</option>
+                                        <option value="2">Cheque</option>
+                                        <option value="3">Transferencia</option>
+                                        <option value="4">Tarjeta de crédito</option>
+                                        <option value="5">Tarjeta de débito</option>
+                                        <option value="9">Otro</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group institucion-group" style="display: none;">
+                                    <label class="required">Institución Financiera</label>
+                                    <select>
+                                        <option value="">Seleccione una opción</option>
+                                        <!-- Opciones de instituciones financieras -->
+                                        <option value="002">Banco Nacional de México, S.A.</option>
+                                        <option value="012">BBVA Bancomer, S.A.</option>
+                                        <option value="014">Banco Santander (México), S.A.</option>
+                                        <option value="021">HSBC México, S.A.</option>
+                                        <option value="036">Banco Inbursa, S.A.</option>
+                                        <option value="072">Banco Mercantil del Norte, S.A.</option>
+                                        <option value="127">Banco Azteca, S.A.</option>
+                                        <option value="137">BanCoppel, S.A.</option>
+                                        <option value="9">Otro</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group especifique-institucion-group" style="display: none;">
+                                    <label class="required">Especifique Institución Financiera</label>
+                                    <input type="text">
+                                </div>
+                                
+                                <div class="form-group cuenta-group" style="display: none;">
+                                    <label class="required">Número de Cuenta</label>
+                                    <input type="text">
+                                </div>
+                                
+                                <div class="form-group otro-pago-group" style="display: none;">
+                                    <label class="required">Especificar Otro Tipo de Pago</label>
+                                    <input type="text">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn add-section" id="add-pago-section">+ Agregar otro pago</button>
+                    </div>
+                    
+                    <!-- Datos del Enajenante (iterativo) -->
+                    <div class="section-toggle" id="toggle-datos-enajenante">
+                        <h3>Datos del Enajenante</h3>
+                        <span>▼</span>
+                    </div>
+                    
+                    <div class="section-content" id="datos-enajenante">
+                        <p>Debes capturar por lo menos un registro.</p>
+                        <div id="enajenantes-container">
+                            <div class="repeating-section">
+                                <button class="remove-section">×</button>
+                                
+                                <div class="form-group">
+                                    <label class="required">Tipo de Enajenante</label>
+                                    <select required>
+                                        <option value="">Seleccione una opción</option>
+                                        <option value="1">Nacional</option>
+                                        <option value="2">Extranjero</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="required">RFC</label>
+                                    <input type="text" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="required">Nombre o Razón Social</label>
+                                    <input type="text" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Apellido Paterno</label>
+                                    <input type="text">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Apellido Materno</label>
+                                    <input type="text">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>CURP</label>
+                                    <input type="text">
+                                </div>
+                                
+                                <div class="form-group extranjero-group" style="display: none;">
+                                    <label class="required">Nacionalidad</label>
+                                    <select>
+                                        <option value="">Seleccione una opción</option>
+                                        <option value="MX">México</option>
+                                        <option value="US">Estados Unidos</option>
+                                        <option value="ES">España</option>
+                                        <option value="CA">Canadá</option>
+                                        <option value="CO">Colombia</option>
+                                        <option value="AR">Argentina</option>
+                                        <!-- Más opciones de nacionalidad -->
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group extranjero-group" style="display: none;">
+                                    <label class="required">Fecha de Nacimiento</label>
+                                    <input type="date">
+                                </div>
+                                
+                                <div class="form-group extranjero-group" style="display: none;">
+                                    <label class="required">Documento Oficial</label>
+                                    <input type="text">
+                                </div>
+                                
+                                <div class="form-group extranjero-group" style="display: none;">
+                                    <label class="required">Número de Folio</label>
+                                    <input type="text">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn add-section" id="add-enajenante-section">+ Agregar otro enajenante</button>
+                    </div>
+                    
+                    <!-- Datos Informativos -->
+                    <div class="section-toggle" id="toggle-datos-informativos">
+                        <h3>Datos Informativos</h3>
+                        <span>▼</span>
+                    </div>
+                    
+                    <div class="section-content" id="datos-informativos">
+                        <div class="form-group">
+                            <label class="required">¿Tiene ingresos exentos provenientes de la enajenación de casa habitación?</label>
+                            <select required>
+                                <option value="">Seleccione una opción</option>
+                                <option value="1">Sí</option>
+                                <option value="2">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="monto-exento-group" style="display: none;">
+                            <label class="required">Monto de la operación exenta</label>
+                            <input type="number" min="0" step="0.01">
+                        </div>
+                        
+                        <div class="form-group" id="impuesto-retenido-group" style="display: none;">
+                            <label class="required">Monto del impuesto retenido</label>
+                            <input type="number" min="0" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <!-- Datos del Adquirente (iterativo) -->
+                    <div class="section-toggle" id="toggle-datos-adquirente">
+                        <h3>Datos del Adquirente</h3>
+                        <span>▼</span>
+                    </div>
+                    
+                    <div class="section-content" id="datos-adquirente">
+                        <p>Debes capturar por lo menos un registro.</p>
+                        <div id="adquirentes-container">
+                            <div class="repeating-section">
+                                <button class="remove-section">×</button>
+                                
+                                <div class="form-group">
+                                    <label class="required">Tipo de Adquirente</label>
+                                    <select required>
+                                        <option value="">Seleccione una opción</option>
+                                        <option value="1">Nacional</option>
+                                        <option value="2">Extranjero</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="required">RFC</label>
+                                    <input type="text" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="required">Nombre o Razón Social</label>
+                                    <input type="text" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Apellido Paterno</label>
+                                    <input type="text">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Apellido Materno</label>
+                                    <input type="text">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>CURP</label>
+                                    <input type="text">
+                                </div>
+                                
+                                <div class="form-group extranjero-group" style="display: none;">
+                                    <label class="required">Nacionalidad</label>
+                                    <select>
+                                        <option value="">Seleccione una opción</option>
+                                        <option value="MX">México</option>
+                                        <option value="US">Estados Unidos</option>
+                                        <option value="ES">España</option>
+                                        <option value="CA">Canadá</option>
+                                        <option value="CO">Colombia</option>
+                                        <option value="AR">Argentina</option>
+                                        <!-- Más opciones de nacionalidad -->
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group extranjero-group" style="display: none;">
+                                    <label class="required">Fecha de Nacimiento</label>
+                                    <input type="date">
+                                </div>
+                                
+                                <div class="form-group extranjero-group" style="display: none;">
+                                    <label class="required">Documento Oficial</label>
+                                    <input type="text">
+                                </div>
+                                
+                                <div class="form-group extranjero-group" style="display: none;">
+                                    <label class="required">Número de Folio</label>
+                                    <input type="text">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn add-section" id="add-adquirente-section">+ Agregar otro adquirente</button>
+                    </div>
+                    
+                    <!-- Pago -->
+                    <div class="section-toggle" id="toggle-pago">
+                        <h3>Pago</h3>
+                        <span>▼</span>
+                    </div>
+                    
+                    <div class="section-content" id="pago">
+                        <div class="form-group">
+                            <label class="required">Ingresos por la enajenación</label>
+                            <input type="number" min="0" step="0.01" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Ingresos exentos</label>
+                            <input type="number" min="0" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Ingresos exentos derivados de la enajenación de terrenos afectados por sismo 2017</label>
+                            <input type="number" min="0" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Deducciones autorizadas (Actualizadas)</label>
+                            <input type="number" min="0" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Ganancia</label>
+                            <input type="number" step="0.01" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Años entre adquisición y venta</label>
+                            <input type="number" min="1" max="20">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Ganancia acumulable</label>
+                            <input type="number" step="0.01" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Ganancia no acumulable</label>
+                    <input type="number" step="0.01" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label>ISR pagado a la Federación</label>
+                    <input type="number" min="0" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label>Número de operación del pago a la Federación</label>
+                    <input type="text">
+                </div>
+                
+                <div class="form-group">
+                    <label>Fecha del pago a la Federación</label>
+                    <input type="date">
+                </div>
+                
+                <div class="form-group">
+                    <label>ISR pagado a la Entidad Federativa</label>
+                    <input type="number" min="0" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label>Número de operación del pago a la Entidad Federativa</label>
+                    <input type="text">
+                </div>
+                
+                <div class="form-group">
+                    <label>Fecha del pago a la Entidad Federativa</label>
+                    <input type="date">
+                </div>
+            </div>
+            
+            <!-- Copropiedad -->
+            <div class="section-toggle" id="toggle-copropiedad">
+                <h3>Copropiedad</h3>
+                <span>▼</span>
+            </div>
+            
+            <div class="section-content" id="copropiedad">
+                <div class="form-group">
+                    <label class="required">¿Los ingresos por enajenación se obtuvieron en copropiedad o sociedad conyugal?</label>
+                    <select required>
+                        <option value="">Seleccione una opción</option>
+                        <option value="1">Sí</option>
+                        <option value="2">No</option>
+                    </select>
+                </div>
+                
+                <div id="copropiedad-details" style="display: none;">
+                    <div class="form-group">
+                        <label class="required">¿Existe representante legal?</label>
+                        <select required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="1">Sí</option>
+                            <option value="2">No</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="rfc-representante-group" style="display: none;">
+                        <label class="required">RFC del representante legal</label>
+                        <input type="text">
+                    </div>
+                    
+                    <h4>Integrantes de la copropiedad</h4>
+                    <div id="copropiedad-container">
+                        <div class="repeating-section">
+                            <button class="remove-section">×</button>
+                            
+                            <div class="form-group">
+                                <label class="required">RFC del integrante</label>
+                                <input type="text" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="required">Porcentaje correspondiente</label>
+                                <input type="number" min="0" max="100" step="0.0001" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="required">Ingresos por la enajenación</label>
+                                <input type="number" min="0" step="0.01" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Total deducciones autorizadas (Actualizadas)</label>
+                                <input type="number" min="0" step="0.01">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Ganancia o Pérdida</label>
+                                <input type="number" step="0.01" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Ganancia acumulable</label>
+                                <input type="number" step="0.01" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Ganancia no acumulable</label>
+                                <input type="number" step="0.01" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>ISR pagado a la Federación</label>
+                                <input type="number" min="0" step="0.01">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>ISR pagado a la Entidad Federativa</label>
+                                <input type="number" min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn add-section" id="add-copropiedad-section">+ Agregar integrante</button>
+                </div>
+            </div>
+        </form>
+        
+        <div class="actions">
+            <button class="btn btn-success" id="generate-enajenacion-txt">Generar Archivo TXT</button>
+            <button class="btn btn-danger" id="reset-enajenacion-form">Limpiar Formulario</button>
+        </div>
+    </div>
+    
+    <!-- ADQUISICIÓN DE BIENES -->
+    <div class="tab-content" id="adquisicion">
+        <h2>Adquisición de Bienes</h2>
+        <p>Complete la información requerida para la adquisición de bienes</p>
+        
+        <form id="adquisicion-form">
+            <!-- Datos de Operación -->
+            <div class="section-toggle" id="toggle-adq-datos-operacion">
+                <h3>Datos de la Operación</h3>
+                <span>▼</span>
+            </div>
+            
+            <div class="section-content active" id="adq-datos-operacion">
+                <div class="form-group">
+                    <label for="adquisicion-numeroEscritura" class="required">Número de Escritura</label>
+                    <input type="text" id="adquisicion-numeroEscritura" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adquisicion-fechaFirma" class="required">Fecha de Firma de Escritura</label>
+                    <input type="date" id="adquisicion-fechaFirma" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adquisicion-tipoInmueble" class="required">Tipo de Inmueble</label>
+                    <select id="adquisicion-tipoInmueble" required>
+                        <option value="">Seleccione una opción</option>
+                        <option value="1">Casa habitación</option>
+                        <option value="2">Comercial</option>
+                        <option value="3">Industrial</option>
+                        <option value="4">Terreno</option>
+                        <option value="9">Otros</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="adquisicion-especificaTipoGroup" style="display: none;">
+                    <label for="adquisicion-especificaTipo" class="required">Especificar Tipo de Inmueble</label>
+                    <input type="text" id="adquisicion-especificaTipo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="adquisicion-valorAvaluo" class="required">Valor de Avalúo</label>
+                    <input type="number" id="adquisicion-valorAvaluo" min="0" step="0.01" required>
+                </div>
+            </div>
+            
+            <!-- Detalle del Pago (iterativo) -->
+            <div class="section-toggle" id="toggle-adq-detalle-pago">
+                <h3>Detalle del Pago</h3>
+                <span>▼</span>
+            </div>
+            
+            <div class="section-content active" id="adq-detalle-pago">
+                <p>Debes capturar por lo menos un registro.</p>
+                <div id="adq-pagos-container">
+                    <div class="repeating-section">
+                        <button class="remove-section">×</button>
+                        
+                        <div class="form-group">
+                            <label class="required">Monto de la Operación</label>
+                            <input type="number" min="0" step="0.01" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Tipo de Pago</label>
+                            <select required>
+                                <option value="">Seleccione una opción</option>
+                                <option value="1">Efectivo</option>
+                                <option value="2">Cheque</option>
+                                <option value="3">Transferencia</option>
+                                <option value="4">Tarjeta de crédito</option>
+                                <option value="5">Tarjeta de débito</option>
+                                <option value="9">Otro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group institucion-group" style="display: none;">
+                            <label class="required">Institución Financiera</label>
+                            <select>
+                                <option value="">Seleccione una opción</option>
+                                <!-- Opciones de instituciones financieras -->
+                                <option value="002">Banco Nacional de México, S.A.</option>
+                                <option value="012">BBVA Bancomer, S.A.</option>
+                                <option value="014">Banco Santander (México), S.A.</option>
+                                <option value="021">HSBC México, S.A.</option>
+                                <option value="036">Banco Inbursa, S.A.</option>
+                                <option value="072">Banco Mercantil del Norte, S.A.</option>
+                                <option value="127">Banco Azteca, S.A.</option>
+                                <option value="137">BanCoppel, S.A.</option>
+                                <option value="9">Otro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group especifique-institucion-group" style="display: none;">
+                            <label class="required">Especifique Institución Financiera</label>
+                            <input type="text">
+                        </div>
+                        
+                        <div class="form-group cuenta-group" style="display: none;">
+                            <label class="required">Número de Cuenta</label>
+                            <input type="text">
+                        </div>
+                        
+                        <div class="form-group otro-pago-group" style="display: none;">
+                            <label class="required">Especificar Otro Tipo de Pago</label>
+                            <input type="text">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn add-section" id="add-adq-pago-section">+ Agregar otro pago</button>
+            </div>
+            
+            <!-- Datos del Enajenante (iterativo) -->
+            <div class="section-toggle" id="toggle-adq-datos-enajenante">
+                <h3>Datos del Enajenante</h3>
+                <span>▼</span>
+            </div>
+            
+            <div class="section-content" id="adq-datos-enajenante">
+                <p>Debes capturar por lo menos un registro.</p>
+                <div id="adq-enajenantes-container">
+                    <div class="repeating-section">
+                        <button class="remove-section">×</button>
+                        
+                        <div class="form-group">
+                            <label class="required">Tipo de Enajenante</label>
+                            <select required>
+                                <option value="">Seleccione una opción</option>
+                                <option value="1">Nacional</option>
+                                <option value="2">Extranjero</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">RFC</label>
+                            <input type="text" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Nombre o Razón Social</label>
+                            <input type="text" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Apellido Paterno</label>
+                            <input type="text">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Apellido Materno</label>
+                            <input type="text">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>CURP</label>
+                            <input type="text">
+                        </div>
+                        
+                        <div class="form-group extranjero-group" style="display: none;">
+                            <label class="required">Nacionalidad</label>
+                            <select>
+                                <option value="">Seleccione una opción</option>
+                                <option value="MX">México</option>
+                                <option value="US">Estados Unidos</option>
+                                <option value="ES">España</option>
+                                <option value="CA">Canadá</option>
+                                <option value="CO">Colombia</option>
+                                <option value="AR">Argentina</option>
+                                <!-- Más opciones de nacionalidad -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group extranjero-group" style="display: none;">
+                            <label class="required">Fecha de Nacimiento</label>
+                            <input type="date">
+                        </div>
+                        
+                        <div class="form-group extranjero-group" style="display: none;">
+                            <label class="required">Documento Oficial</label>
+                            <input type="text">
+                        </div>
+                        
+                        <div class="form-group extranjero-group" style="display: none;">
+                            <label class="required">Número de Folio</label>
+                            <input type="text">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn add-section" id="add-adq-enajenante-section">+ Agregar otro enajenante</button>
+            </div>
+            
+            <!-- Datos del Adquirente (iterativo) -->
+            <div class="section-toggle" id="toggle-adq-datos-adquirente">
+                <h3>Datos del Adquirente</h3>
+                <span>▼</span>
+            </div>
+            
+            <div class="section-content" id="adq-datos-adquirente">
+                <p>Debes capturar por lo menos un registro.</p>
+                <div id="adq-adquirentes-container">
+                    <div class="repeating-section">
+                        <button class="remove-section">×</button>
+                        
+                        <div class="form-group">
+                            <label class="required">Tipo de Adquirente</label>
+                            <select required>
+                                <option value="">Seleccione una opción</option>
+                                <option value="1">Nacional</option>
+                                <option value="2">Extranjero</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">RFC</label>
+                            <input type="text" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Nombre o Razón Social</label>
+                            <input type="text" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Apellido Paterno</label>
+                            <input type="text">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Apellido Materno</label>
+                            <input type="text">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>CURP</label>
+                            <input type="text">
+                        </div>
+                        
+                        <div class="form-group extranjero-group" style="display: none;">
+                            <label class="required">Nacionalidad</label>
+                            <select>
+                                <option value="">Seleccione una opción</option>
+                                <option value="MX">México</option>
+                                <option value="US">Estados Unidos</option>
+                                <option value="ES">España</option>
+                                <option value="CA">Canadá</option>
+                                <option value="CO">Colombia</option>
+                                <option value="AR">Argentina</option>
+                                <!-- Más opciones de nacionalidad -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group extranjero-group" style="display: none;">
+                            <label class="required">Fecha de Nacimiento</label>
+                            <input type="date">
+                        </div>
+                        
+                        <div class="form-group extranjero-group" style="display: none;">
+                            <label class="required">Documento Oficial</label>
+                            <input type="text">
+                        </div>
+                        
+                        <div class="form-group extranjero-group" style="display: none;">
+                            <label class="required">Número de Folio</label>
+                            <input type="text">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn add-section" id="add-adq-adquirente-section">+ Agregar otro adquirente</button>
+            </div>
+        </form>
+        
+        <div class="actions">
+            <button class="btn btn-success" id="generate-adquisicion-txt">Generar Archivo TXT</button>
+            <button class="btn btn-danger" id="reset-adquisicion-form">Limpiar Formulario</button>
+        </div>
+    </div>
+    
+    <!-- OMISIÓN -->
+    <div class="tab-content" id="omision">
+        <h2>Omisión de Presentación</h2>
+        <p>Complete la información requerida para la omisión de presentación</p>
+        
+        <form id="omision-form">
+            <div class="form-group">
+                <label for="omision-ejercicio" class="required">Ejercicio</label>
+                <input type="number" id="omision-ejercicio" min="2009" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="omision-periodo" class="required">Periodo</label>
+                <select id="omision-periodo" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="01">Enero</option>
+                    <option value="02">Febrero</option>
+                    <option value="03">Marzo</option>
+                    <option value="04">Abril</option>
+                    <option value="05">Mayo</option>
+                    <option value="06">Junio</option>
+                    <option value="07">Julio</option>
+                    <option value="08">Agusto</option>
+                    <option value="09">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="omision-tipoDeclaracion" class="required">Tipo de Declaración</label>
+                <select id="omision-tipoDeclaracion" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="001">001 - Normal</option>
+                    <option value="002">002 - Complementaria</option>
+                    <option value="003">003 - Aclaratoria</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="omision-motivo" class="required">Motivo de la Omisión</label>
+                <textarea id="omision-motivo" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="omision-fechaOperacion" class="required">Fecha de Operación</label>
+                <input type="date" id="omision-fechaOperacion" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="omision-rfc" class="required">RFC</label>
+                <input type="text" id="omision-rfc" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="omision-claveActividad" class="required">Clave de Actividad</label>
+                <input type="text" id="omision-claveActividad" required>
+            </div>
+        </form>
+        
+        <div class="actions">
+            <button class="btn btn-success" id="generate-omision-txt">Generar Archivo TXT</button>
+            <button class="btn btn-danger" id="reset-omision-form">Limpiar Formulario</button>
+        </div>
+    </div>
+    
+    <!-- IDENTIFICACIÓN DE SOCIOS -->
+    <div class="tab-content" id="identificacion">
+        <h2>Identificación de Socios o Accionistas</h2>
+        <p>Complete la información requerida para la identificación de socios or accionistas</p>
+        
+        <form id="identificacion-form">
+            <div class="form-group">
+                <label for="identificacion-ejercicio" class="required">Ejercicio</label>
+                <input type="number" id="identificacion-ejercicio" min="2009" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="identificacion-periodo" class="required">Periodo</label>
+                <select id="identificacion-periodo" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="01">Enero</option>
+                    <option value="02">Febrero</option>
+                    <option value="03">Marzo</option>
+                    <option value="04">Abril</option>
+                    <option value="05">Mayo</option>
+                    <option value="06">Junio</option>
+                    <option value="07">Julio</option>
+                    <option value="08">Agosto</option>
+                    <option value="09">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="identificacion-tipoDeclaracion" class="required">Tipo de Declaración</label>
+                <select id="identificacion-tipoDeclaracion" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="001">001 - Normal</option>
+                    <option value="002">002 - Complementaria</option>
+                    <option value="003">003 - Aclaratoria</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="identificacion-fechaOperacion" class="required">Fecha de Operación</label>
+                <input type="date" id="identificacion-fechaOperacion" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="identificacion-rfc" class="required">RFC de la Persona Moral</label>
+                <input type="text" id="identificacion-rfc" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="identificacion-claveActividad" class="required">Clave de Actividad</label>
+                <input type="text" id="identificacion-claveActividad" required>
+            </div>
+            
+            <h3>Socios o Accionistas</h3>
+            <div id="socios-container">
+                <div class="repeating-section">
+                    <button class="remove-section">×</button>
+                    
+                    <div class="form-group">
+                        <label class="required">Tipo de Socio</label>
+                        <select required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="1">Nacional</option>
+                            <option value="2">Extranjero</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">RFC</label>
+                        <input type="text" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">Nombre o Razón Social</label>
+                        <input type="text" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Apellido Paterno</label>
+                        <input type="text">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Apellido Materno</label>
+                        <input type="text">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>CURP</label>
+                        <input type="text">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">Porcentaje de Participación</label>
+                        <input type="number" min="0" max="100" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group extranjero-group" style="display: none;">
+                        <label class="required">Nacionalidad</label>
+                        <select>
+                            <option value="">Seleccione una opción</option>
+                            <option value="MX">México</option>
+                            <option value="US">Estados Unidos</option>
+                            <option value="ES">España</option>
+                            <option value="CA">Canadá</option>
+                            <option value="CO">Colombia</option>
+                            <option value="AR">Argentina</option>
+                            <!-- Más opciones de nacionalidad -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group extranjero-group" style="display: none;">
+                        <label class="required">Fecha de Nacimiento</label>
+                        <input type="date">
+                    </div>
+                    
+                    <div class="form-group extranjero-group" style="display: none;">
+                        <label class="required">Documento Oficial</label>
+                        <input type="text">
+                    </div>
+                    
+                    <div class="form-group extranjero-group" style="display: none;">
+                        <label class="required">Número de Folio</label>
+                        <input type="text">
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" class="btn add-section" id="add-socio-section">+ Agregar Socio</button>
+        </form>
+        
+        <div class="actions">
+            <button class="btn btn-success" id="generate-identificacion-txt">Generar Archivo TXT</button>
+            <button class="btn btn-danger" id="reset-identificacion-form">Limpiar Formulario</button>
+        </div>
+    </div>
+    
+    <!-- ACTIVIDADES VULNERABLES -->
+    <div class="tab-content" id="actividades">
+        <h2>Aviso de Actividades Vulnerables</h2>
+        <p>Complete la información requerida para el aviso de actividades vulnerables</p>
+        
+        <form id="actividades-form">
+            <div class="form-group">
+                <label for="actividades-ejercicio" class="required">Ejercicio</label>
+                <input type="number" id="actividades-ejercicio" min="2009" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="actividades-periodo" class="required">Periodo</label>
+                <select id="actividades-periodo" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="01">Enero</option>
+                    <option value="02">Febrero</option>
+                    <option value="03">Marzo</option>
+                    <option value="04">Abril</option>
+                    <option value="05">Mayo</option>
+                    <option value="06">Junio</option>
+                    <option value="07">Julio</option>
+                    <option value="08">Agosto</option>
+                    <option value="09">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="actividades-tipoDeclaracion" class="required">Tipo de Declaración</label>
+                <select id="actividades-tipoDeclaracion" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="001">001 - Normal</option>
+                    <option value="002">002 - Complementaria</option>
+                    <option value="003">003 - Aclaratoria</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="actividades-fechaOperacion" class="required">Fecha de Operación</label>
+                <input type="date" id="actividades-fechaOperacion" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="actividades-rfc" class="required">RFC</label>
+                <input type="text" id="actividades-rfc" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="actividades-claveActividad" class="required">Clave de Actividad</label>
+                <input type="text" id="actividades-claveActividad" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="actividades-tipoActividad" class="required">Tipo de Actividad Vulnerable</label>
+                <select id="actividades-tipoActividad" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="1">Juegos con apuestas, sorteos y rifas</option>
+                    <option value="2">Automóviles, autopartes y embarcaciones</option>
+                    <option value="3">Joyas, metales y piedras preciosas</option>
+                    <option value="4">Tarjetas de crédito, débito y servicios prepagados</option>
+                    <option value="5">Operaciones con moneda extranjera y metales</option>
+                    <option value="6">Operaciones con cheques de caja y cheques de viajero</option>
+                    <option value="7">Servicios profesionales</option>
+                    <option value="8">Servicios inmobiliarios</option>
+                    <option value="9">Otros</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="actividades-descripcion" class="required">Descripción de la Actividad</label>
+                <textarea id="actividades-descripcion" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="actividades-monto" class="required">Monto de la Operación</label>
+                <input type="number" id="actividades-monto" min="0" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="actividades-periodicidad" class="required">Periodicidad</label>
+                <select id="actividades-periodicidad" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="1">Única</option>
+                    <option value="2">Diaria</option>
+                    <option value="3">Semanal</option>
+                    <option value="4">Quincenal</option>
+                    <option value="5">Mensual</option>
+                    <option value="6">Bimestral</option>
+                    <option value="7">Trimestral</option>
+                    <option value="8">Semestral</option>
+                    <option value="9">Anual</option>
+                </select>
+            </div>
+        </form>
+        
+        <div class="actions">
+            <button class="btn btn-success" id="generate-actividades-txt">Generar Archivo TXT</button>
+            <button class="btn btn-danger" id="reset-actividades-form">Limpiar Formulario</button>
+        </div>
+    </div>
+    
+    <!-- GESTIÓN DE ALERTAS -->
+    <div class="tab-content" id="alertas">
+        <h2>Gestión de Alertas PLD</h2>
+        <p>Sistema de detección y gestión de operaciones inusuales según la ley antilavado 2025</p>
+        
+        <div class="alert-config">
+            <h4>Umbrales de Operaciones</h4>
+            <div class="two-columns">
+                <div class="form-group">
+                    <label for="umbral-bajo" class="required">Umbral Bajo (MXN)</label>
+                    <input type="number" id="umbral-bajo" min="0" step="1000" value="50000">
+                </div>
+                <div class="form-group">
+                    <label for="umbral-medio" class="required">Umbral Medio (MXN)</label>
+                    <input type="number" id="umbral-medio" min="0" step="1000" value="150000">
+                </div>
+                <div class="form-group">
+                    <label for="umbral-alto" class="required">Umbral Alto (MXN)</label>
+                    <input type="number" id="umbral-alto" min="0" step="1000" value="500000">
+                </div>
+                <div class="form-group">
+                    <label for="umbral-critico" class="required">Umbral Crítico (MXN)</label>
+                    <input type="number" id="umbral-critico" min="0" step="1000" value="1000000">
+                </div>
+            </div>
+            <button class="btn btn-info" id="guardar-umbrales">Guardar Umbrales</button>
+        </div>
+        
+        <div class="alert-config">
+            <h4>Configuración de Alertas Automáticas</h4>
+            <div class="form-group">
+                <label for="alertas-automaticas">
+                    <input type="checkbox" id="alertas-automaticas" checked> 
+                    Generar alertas automáticamente
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="notificaciones-email">
+                    <input type="checkbox" id="notificaciones-email"> 
+                    Enviar notificaciones por email
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="email-notificaciones">Email para notificaciones</label>
+                <input type="email" id="email-notificaciones" placeholder="email@ejemplo.com">
+            </div>
+            <button class="btn btn-info" id="guardar-config-alertas">Guardar Configuración</button>
+        </div>
+        
+        <h3>Alertas Generadas</h3>
+        <div class="alert-list" id="alertas-generadas">
+            <p>No hay alertas generadas</p>
+        </div>
+        
+        <div class="actions">
+            <button class="btn btn-warning" id="verificar-operaciones">Verificar Operaciones Actuales</button>
+            <button class="btn btn-info" id="generar-reporte-alertas">Generar Reporte de Alertas</button>
+        </div>
+    </div>
+    
+    <!-- CONFIGURACIÓN -->
+    <div class="tab-content" id="configuracion">
+        <h2>Configuración del Sistema</h2>
+        
+        <div class="two-columns">
+            <div>
+                <h3>Usuarios del Sistema</h3>
+                <div class="form-group">
+                    <label for="nuevo-usuario">Nombre de Usuario</label>
+                    <input type="text" id="nuevo-usuario">
+                </div>
+                <div class="form-group">
+                    <label for="nueva-contraseña">Contraseña</label>
+                    <input type="password" id="nueva-contraseña">
+                </div>
+                <div class="form-group">
+                    <label for="nivel-acceso">Nivel de Acceso</label>
+                    <select id="nivel-acceso">
+                        <option value="usuario">Usuario</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <button class="btn btn-success" id="agregar-usuario">Agregar Usuario</button>
+                
+                <h4>Usuarios Existentes</h4>
+                <div id="lista-usuarios">
+                    <p>Cargando usuarios...</p>
+                </div>
+            </div>
+            
+            <div>
+                <h3>Configuración General</h3>
+                <div class="form-group">
+                    <label for="nombre-empresa">Nombre de la Empresa</label>
+                    <input type="text" id="nombre-empresa">
+                </div>
+                <div class="form-group">
+                    <label for="rfc-empresa">RFC de la Empresa</label>
+                    <input type="text" id="rfc-empresa">
+                </div>
+                <div class="form-group">
+                    <label for="directorio-archivos">Directorio de Archivos</label>
+                    <input type="text" id="directorio-archivos" placeholder="C:/DeclaraNOT/Archivos">
+                </div>
+                <div class="form-group">
+                    <label for="backup-automatico">
+                        <input type="checkbox" id="backup-automatico"> 
+                        Realizar backup automático
+                    </label>
+                </div>
+                <button class="btn btn-info" id="guardar-config-general">Guardar Configuración</button>
+                
+                <h4>Mantenimiento</h4>
+                <button class="btn btn-warning" id="realizar-backup">Realizar Backup Manual</button>
+                <button class="btn btn-danger" id="limpiar-datos">Limpiar Datos Temporales</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Sistema PLD - Prevención de Lavado de Dinero</p>
+        <p>© 2025 - Versión 2.0 | Cumplimiento Ley Antilavado 2025</p>
+    </footer>
+</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
